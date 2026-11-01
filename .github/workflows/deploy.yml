@@ -20,7 +20,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      S: ${{ toJSON(secrets) }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
+      SITE_NAME: ${{ secrets.SITE_NAME }}
+      COMPANY_NAME: ${{ secrets.COMPANY_NAME }}
+      COMPANY_ADDRESS: ${{ secrets.COMPANY_ADDRESS }}
+      CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL }}
+      SUPPORT_URL: ${{ secrets.SUPPORT_URL }}
+      SOURCE_TOKEN: ${{ secrets.SOURCE_TOKEN || secrets.MYALBA }}
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v7
         with:

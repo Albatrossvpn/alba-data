@@ -17,7 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      S: ${{ toJSON(secrets) }}
+      SOURCE_TOKEN: ${{ secrets.SOURCE_TOKEN || secrets.MYALBA }}
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v7
         with:
