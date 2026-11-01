@@ -1,0 +1,50 @@
+name: Cleanup
+
+on:
+  workflow_run:
+    workflows: [Update, Refresh, Release, Deploy, Mirror]
+    types: [completed]
+  schedule:
+    - cron: "41 * * * *"
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: cleanup-${{ github.event.workflow_run.id || 'sweep' }}
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          R: ${{ github.repository }}
+          RUN: ${{ github.event.workflow_run.id }}
+          RESULT: ${{ github.event.workflow_run.conclusion }}
+          SELF: ${{ github.run_id }}
+        run: |
+          set +e
+          del_run() { gh api -X DELETE "repos/$R/actions/runs/$1" >/dev/null 2>&1 || gh api -X DELETE "repos/$R/actions/runs/$1/logs" >/dev/null 2>&1; }
+          if [ -n "$RUN" ]; then
+            gh api "repos/$R/actions/runs/$RUN/artifacts" --jq '.artifacts[].id' 2>/dev/null |
+              while read -r a; do gh api -X DELETE "repos/$R/actions/artifacts/$a" >/dev/null 2>&1; done
+            gh api --paginate "repos/$R/actions/caches?per_page=100" --jq ".actions_caches[] | select(.key | contains(\"-$RUN-\")) | .id" 2>/dev/null |
+              while read -r c; do gh api -X DELETE "repos/$R/actions/caches/$c" >/dev/null 2>&1; done
+            [ "$RESULT" = success ] && del_run "$RUN"
+          else
+            day="$(date -u -d '-1 day' +%Y-%m-%dT%H:%M:%SZ)"
+            hour="$(date -u -d '-1 hour' +%Y-%m-%dT%H:%M:%SZ)"
+            gh api --paginate "repos/$R/actions/runs?per_page=100&status=completed" \
+              --jq ".workflow_runs[] | select((.updated_at < \"$day\") or (.name == \"Cleanup\" and .updated_at < \"$hour\")) | .id" 2>/dev/null |
+              while read -r id; do [ "$id" != "$SELF" ] && del_run "$id"; done
+            gh api --paginate "repos/$R/actions/caches?per_page=100" --jq ".actions_caches[] | select(.last_accessed_at < \"$day\") | .id" 2>/dev/null |
+              while read -r c; do gh api -X DELETE "repos/$R/actions/caches/$c" >/dev/null 2>&1; done
+            gh api --paginate "repos/$R/actions/artifacts?per_page=100" --jq '.artifacts[].id' 2>/dev/null |
+              while read -r a; do gh api -X DELETE "repos/$R/actions/artifacts/$a" >/dev/null 2>&1; done
+          fi
+          echo done

@@ -1,0 +1,39 @@
+name: Update
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: update
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 80
+    env:
+      S: ${{ toJSON(secrets) }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          repository: Albatrossvpn/Albatross
+          token: ${{ secrets.SOURCE_TOKEN || secrets.MYALBA }}
+          path: src
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: src/go.mod
+          cache-dependency-path: src/go.sum
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: bash src/deploy/data-repo/collect.sh
+      - if: success() && github.ref_name == github.event.repository.default_branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run update.yml --ref "${GITHUB_REF_NAME}" -R "${{ github.repository }}" >/dev/null || true

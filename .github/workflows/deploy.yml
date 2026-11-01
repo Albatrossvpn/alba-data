@@ -1,0 +1,34 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch, tag or commit"
+        required: true
+        default: main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      S: ${{ toJSON(secrets) }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          repository: Albatrossvpn/Albatross
+          token: ${{ secrets.SOURCE_TOKEN || secrets.MYALBA }}
+          ref: ${{ inputs.ref }}
+          path: src
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: bash src/deploy/data-repo/deploy.sh
