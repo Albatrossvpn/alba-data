@@ -34,10 +34,6 @@ jobs:
       TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
       SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
       DOMESTIC_MIRROR: ${{ secrets.DOMESTIC_MIRROR }}
-      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
     steps:
     - uses: actions/checkout@v7
       with:
@@ -70,10 +66,6 @@ jobs:
       TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
       SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
       DOMESTIC_MIRROR: ${{ secrets.DOMESTIC_MIRROR }}
-      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
     steps:
     - uses: actions/checkout@v7
       with:
@@ -114,10 +106,6 @@ jobs:
       TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
       SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
       DOMESTIC_MIRROR: ${{ secrets.DOMESTIC_MIRROR }}
-      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
     steps:
     - uses: actions/checkout@v7
       with:
@@ -169,10 +157,6 @@ jobs:
       TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
       SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
       DOMESTIC_MIRROR: ${{ secrets.DOMESTIC_MIRROR }}
-      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
     steps:
     - uses: actions/checkout@v7
       with:
@@ -220,7 +204,7 @@ jobs:
       shell: bash
       run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-8.sh"
     - if: inputs.release == '' && !startsWith(github.ref, 'refs/tags/v')
-      uses: reactivecircus/android-emulator-runner@v2.38.0
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
       with:
         api-level: 34
         arch: x86_64
@@ -230,7 +214,7 @@ jobs:
         script: bash build/android/selftest.sh
     - if: inputs.release == '' && !startsWith(github.ref, 'refs/tags/v')
       continue-on-error: true
-      uses: reactivecircus/android-emulator-runner@v2.38.0
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
       with:
         api-level: 30
         arch: x86_64
@@ -240,7 +224,7 @@ jobs:
         script: bash build/android/selftest.sh
     - if: inputs.release == '' && !startsWith(github.ref, 'refs/tags/v')
       continue-on-error: true
-      uses: reactivecircus/android-emulator-runner@v2.38.0
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
       with:
         api-level: 23
         arch: x86_64
@@ -262,10 +246,6 @@ jobs:
       TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
       SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
       DOMESTIC_MIRROR: ${{ secrets.DOMESTIC_MIRROR }}
-      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
     steps:
     - uses: actions/checkout@v7
       with:
@@ -329,10 +309,6 @@ jobs:
       TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
       SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
       DOMESTIC_MIRROR: ${{ secrets.DOMESTIC_MIRROR }}
-      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
     steps:
     - uses: actions/checkout@v7
       with:
@@ -361,32 +337,17 @@ jobs:
         CTX0: ${{ needs.build.outputs.version }}
       shell: bash
       run: bash "$GITHUB_WORKSPACE/repo/deploy/data-repo/steps/release-assets-3.sh"
-    - uses: softprops/action-gh-release@v3
+    - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64
       with:
         token: ${{ secrets.SOURCE_TOKEN || secrets.MYALBA }}
         tag_name: v${{ needs.build.outputs.version }}
         target_commitish: ${{ needs.build.outputs.sha }}
         body: |
           Android: one APK for 64-bit phones, Android 6 and newer. If you have 0.3.1 or older, uninstall it before installing this version (one time only). Later updates install over it.
+          <!-- force_update: ${{ inputs.force_update }} -->
+          <!-- update_message: ${{ inputs.update_message }} -->
         fail_on_unmatched_files: true
         files: |
           Albatross-*-android.apk
           dist/Albatross-Setup-*.exe
         repository: Albatrossvpn/albatross-app
-    - uses: actions/setup-go@v7
-      with:
-        go-version-file: repo/go.mod
-        cache-dependency-path: repo/go.sum
-    - uses: actions/setup-node@v7
-      with:
-        node-version: 22
-        cache: npm
-        cache-dependency-path: repo/backend/package-lock.json
-    - shell: bash
-      run: bash "$GITHUB_WORKSPACE/repo/deploy/data-repo/steps/release-assets-4.sh"
-    - env:
-        VERSION: ${{ needs.build.outputs.version }}
-        FORCE: ${{ inputs.force_update }}
-        MESSAGE: ${{ inputs.update_message }}
-      shell: bash
-      run: bash "$GITHUB_WORKSPACE/repo/deploy/data-repo/steps/release-assets-5.sh"
