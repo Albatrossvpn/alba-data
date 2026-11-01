@@ -26,6 +26,7 @@ jobs:
           R: ${{ github.repository }}
           RUN: ${{ github.event.workflow_run.id }}
           RESULT: ${{ github.event.workflow_run.conclusion }}
+          NAME: ${{ github.event.workflow_run.name }}
           SELF: ${{ github.run_id }}
         run: |
           set +e
@@ -35,12 +36,12 @@ jobs:
               while read -r a; do gh api -X DELETE "repos/$R/actions/artifacts/$a" >/dev/null 2>&1; done
             gh api --paginate "repos/$R/actions/caches?per_page=100" --jq ".actions_caches[] | select(.key | contains(\"-$RUN-\")) | .id" 2>/dev/null |
               while read -r c; do gh api -X DELETE "repos/$R/actions/caches/$c" >/dev/null 2>&1; done
-            [ "$RESULT" = success ] && del_run "$RUN"
+            [ "$RESULT" = success ] && [ "$NAME" != Update ] && del_run "$RUN"
           else
             day="$(date -u -d '-1 day' +%Y-%m-%dT%H:%M:%SZ)"
             hour="$(date -u -d '-1 hour' +%Y-%m-%dT%H:%M:%SZ)"
             gh api --paginate "repos/$R/actions/runs?per_page=100&status=completed" \
-              --jq ".workflow_runs[] | select((.updated_at < \"$day\") or (.name == \"Cleanup\" and .updated_at < \"$hour\")) | .id" 2>/dev/null |
+              --jq ".workflow_runs[] | select((.updated_at < \"$day\") or ((.name == \"Cleanup\" or .name == \"Update\") and .updated_at < \"$hour\")) | .id" 2>/dev/null |
               while read -r id; do [ "$id" != "$SELF" ] && del_run "$id"; done
             gh api --paginate "repos/$R/actions/caches?per_page=100" --jq ".actions_caches[] | select(.last_accessed_at < \"$day\") | .id" 2>/dev/null |
               while read -r c; do gh api -X DELETE "repos/$R/actions/caches/$c" >/dev/null 2>&1; done
