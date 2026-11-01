@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          repository: Albatrossvpn/Albatross
+          repository: Albatrossvpn/albatross-app
           token: ${{ secrets.SOURCE_TOKEN || secrets.MYALBA }}
           path: src
       - uses: actions/setup-go@v7
