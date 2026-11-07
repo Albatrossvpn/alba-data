@@ -1,0 +1,668 @@
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        required: true
+        default: main
+      release:
+        required: false
+      dry_run:
+        type: boolean
+        default: false
+      test_build:
+        type: boolean
+        default: false
+      force_update:
+        type: boolean
+        default: true
+      update_message:
+        required: false
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: ${{ inputs.release != '' && 'release' || format('build-{0}', github.ref) }}
+  cancel-in-progress: false
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ADMIN_USER: ${{ secrets.ADMIN_USER }}
+      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+      OWN_KEY: ${{ secrets.OWN_KEY }}
+      TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
+      DOMESTIC_MIRROR: ${{ secrets.DOMESTIC_MIRROR }}
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        repository: ${{ secrets.SOURCE_REPO }}
+        token: ${{ secrets.SOURCE_TOKEN }}
+        ref: ${{ inputs.ref }}
+    - env:
+        RELEASE: ${{ inputs.release }}
+        DRY_RUN: ${{ inputs.dry_run }}
+        TEST_BUILD: ${{ inputs.test_build }}
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/backend-1.sh"
+    - uses: actions/setup-node@v7
+      with:
+        node-version: 22
+        cache: npm
+        cache-dependency-path: backend/package-lock.json
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/backend-2.sh"
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/backend-3.sh"
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/backend-4.sh"
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/backend-5.sh"
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/backend-6.sh"
+  test:
+    needs: backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ADMIN_USER: ${{ secrets.ADMIN_USER }}
+      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+      OWN_KEY: ${{ secrets.OWN_KEY }}
+      TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
+      DOMESTIC_MIRROR: ${{ secrets.DOMESTIC_MIRROR }}
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        repository: ${{ secrets.SOURCE_REPO }}
+        token: ${{ secrets.SOURCE_TOKEN }}
+        ref: ${{ inputs.ref }}
+    - uses: actions/setup-go@v7
+      with:
+        go-version-file: go.mod
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/test-1.sh"
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/test-2.sh"
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/test-3.sh"
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/test-4.sh"
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/test-5.sh"
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/test-6.sh"
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/test-7.sh"
+    - if: runner.environment == 'github-hosted'
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/test-8.sh"
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      sha: ${{ steps.src.outputs.sha }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ADMIN_USER: ${{ secrets.ADMIN_USER }}
+      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+      OWN_KEY: ${{ secrets.OWN_KEY }}
+      TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
+      DOMESTIC_MIRROR: ${{ secrets.DOMESTIC_MIRROR }}
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        repository: ${{ secrets.SOURCE_REPO }}
+        token: ${{ secrets.SOURCE_TOKEN }}
+        ref: ${{ inputs.ref }}
+    - uses: actions/setup-go@v7
+      with:
+        go-version-file: go.mod
+        cache: false
+    - id: version
+      env:
+        RELEASE: ${{ inputs.release }}
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/build-1.sh"
+    - uses: actions/setup-node@v7
+      with:
+        node-version: 22
+        cache: npm
+        cache-dependency-path: backend/package-lock.json
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/build-2.sh"
+    - if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/build-3.sh"
+    - env:
+        VERSION: ${{ steps.version.outputs.version }}
+        RELEASE: ${{ inputs.release }}
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/build-4.sh"
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/build-5.sh"
+    - uses: actions/cache/save@v6
+      with:
+        key: folder-${{ github.run_id }}-${{ github.run_attempt }}
+        path: sealed/folder.tar.gpg
+        enableCrossOsArchive: true
+    - id: src
+      if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/build-6.sh"
+  android:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      apk_sha256: ${{ steps.apk.outputs.sha256 }}
+      apk32_sha256: ${{ steps.apk.outputs.sha256_armv7 }}
+    env:
+      VERSION: ${{ needs.build.outputs.version }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ADMIN_USER: ${{ secrets.ADMIN_USER }}
+      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+      OWN_KEY: ${{ secrets.OWN_KEY }}
+      TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
+      DOMESTIC_MIRROR: ${{ secrets.DOMESTIC_MIRROR }}
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        repository: ${{ secrets.SOURCE_REPO }}
+        token: ${{ secrets.SOURCE_TOKEN }}
+        ref: ${{ inputs.ref }}
+    - if: runner.environment == 'github-hosted'
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-1.sh"
+    - uses: actions/setup-go@v7
+      with:
+        go-version-file: go.mod
+        cache: false
+    - uses: actions/setup-java@v6
+      with:
+        distribution: temurin
+        java-version: '17'
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-2.sh"
+    - uses: actions/setup-node@v7
+      with:
+        node-version: 22
+        cache: npm
+        cache-dependency-path: backend/package-lock.json
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-3.sh"
+    - id: apk
+      timeout-minutes: 55
+      env:
+        RELEASE: ${{ inputs.release }}
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-4.sh"
+    - if: inputs.release == '' && !startsWith(github.ref, 'refs/tags/v') && runner.environment == 'github-hosted'
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-5.sh"
+    - if: inputs.release == '' && !startsWith(github.ref, 'refs/tags/v') && runner.environment == 'github-hosted'
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-6.sh"
+    - if: inputs.release == '' && !startsWith(github.ref, 'refs/tags/v') && runner.environment == 'github-hosted'
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+      with:
+        api-level: 34
+        arch: x86_64
+        target: google_apis
+        disable-animations: true
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+        script: bash build/android/selftest.sh
+    - if: inputs.release == '' && !startsWith(github.ref, 'refs/tags/v') && runner.environment == 'github-hosted'
+      continue-on-error: true
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+      with:
+        api-level: 30
+        arch: x86_64
+        target: google_apis
+        disable-animations: true
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+        script: bash build/android/selftest.sh
+    - if: inputs.release == '' && !startsWith(github.ref, 'refs/tags/v') && runner.environment == 'github-hosted'
+      continue-on-error: true
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+      with:
+        api-level: 23
+        arch: x86_64
+        target: google_apis
+        disk-size: 2048M
+        disable-animations: true
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+        script: bash build/android/selftest.sh
+    - if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-7.sh"
+    - if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+      with:
+        name: android-apk
+        path: sealed/android-apk.tar.gpg
+        retention-days: 1
+        if-no-files-found: error
+  installer:
+    needs: build
+    runs-on: windows-latest
+    timeout-minutes: 30
+    outputs:
+      setup_sha256: ${{ steps.setup.outputs.sha256 }}
+    env:
+      VERSION: ${{ needs.build.outputs.version }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ADMIN_USER: ${{ secrets.ADMIN_USER }}
+      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+      OWN_KEY: ${{ secrets.OWN_KEY }}
+      TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
+      DOMESTIC_MIRROR: ${{ secrets.DOMESTIC_MIRROR }}
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        repository: ${{ secrets.SOURCE_REPO }}
+        token: ${{ secrets.SOURCE_TOKEN }}
+        ref: ${{ inputs.ref }}
+    - uses: actions/cache/restore@v6
+      with:
+        key: folder-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: folder-${{ github.run_id }}-
+        path: sealed/folder.tar.gpg
+        enableCrossOsArchive: true
+        fail-on-cache-miss: true
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/installer-1.sh"
+    - uses: actions/setup-go@v7
+      with:
+        go-version-file: go.mod
+    - shell: pwsh
+      run: '& "$env:GITHUB_WORKSPACE/deploy/data-repo/steps/installer-2.ps1"; if ($LASTEXITCODE) { exit $LASTEXITCODE }'
+    - shell: pwsh
+      run: '& "$env:GITHUB_WORKSPACE/deploy/data-repo/steps/installer-3.ps1"; if ($LASTEXITCODE) { exit $LASTEXITCODE }'
+    - if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
+      shell: pwsh
+      run: '& "$env:GITHUB_WORKSPACE/deploy/data-repo/steps/installer-4.ps1"; if ($LASTEXITCODE) { exit $LASTEXITCODE }'
+    - if: inputs.release == '' && !startsWith(github.ref, 'refs/tags/v')
+      continue-on-error: true
+      timeout-minutes: 12
+      shell: pwsh
+      run: '& "$env:GITHUB_WORKSPACE/deploy/data-repo/steps/installer-5.ps1"; if ($LASTEXITCODE) { exit $LASTEXITCODE }'
+    - shell: pwsh
+      run: '& "$env:GITHUB_WORKSPACE/deploy/data-repo/steps/installer-6.ps1"; if ($LASTEXITCODE) { exit $LASTEXITCODE }'
+    - shell: pwsh
+      run: '& "$env:GITHUB_WORKSPACE/deploy/data-repo/steps/installer-7.ps1"; if ($LASTEXITCODE) { exit $LASTEXITCODE }'
+    - shell: pwsh
+      run: '& "$env:GITHUB_WORKSPACE/deploy/data-repo/steps/installer-8.ps1"; if ($LASTEXITCODE) { exit $LASTEXITCODE }'
+    - id: setup
+      if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
+      shell: pwsh
+      run: '& "$env:GITHUB_WORKSPACE/deploy/data-repo/steps/installer-9.ps1"; if ($LASTEXITCODE) { exit $LASTEXITCODE }'
+    - if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/installer-10.sh"
+    - if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+      with:
+        name: setup
+        path: sealed/setup.tar.gpg
+        retention-days: 1
+        if-no-files-found: error
+  desktop-linux:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      linux_x86_64_sha256: ${{ steps.sums.outputs.linux_x86_64 }}
+      linux_arm64_sha256: ${{ steps.sums.outputs.linux_arm64 }}
+    env:
+      VERSION: ${{ needs.build.outputs.version }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ADMIN_USER: ${{ secrets.ADMIN_USER }}
+      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+      OWN_KEY: ${{ secrets.OWN_KEY }}
+      TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
+      DOMESTIC_MIRROR: ${{ secrets.DOMESTIC_MIRROR }}
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        repository: ${{ secrets.SOURCE_REPO }}
+        token: ${{ secrets.SOURCE_TOKEN }}
+        ref: ${{ inputs.ref }}
+    - uses: actions/setup-go@v7
+      with:
+        go-version-file: go.mod
+        cache: false
+    - uses: actions/setup-node@v7
+      with:
+        node-version: 22
+        cache: npm
+        cache-dependency-path: backend/package-lock.json
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/desktop-linux-1.sh"
+    - if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/desktop-linux-2.sh"
+    - env:
+        RELEASE: ${{ inputs.release }}
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/desktop-linux-3.sh"
+    - env:
+        RELEASE: ${{ inputs.release }}
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/desktop-linux-4.sh"
+    - id: sums
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/desktop-linux-5.sh"
+    - if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/desktop-linux-6.sh"
+    - if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+      with:
+        name: desktop-linux
+        path: sealed/desktop-linux.tar.gpg
+        retention-days: 1
+        if-no-files-found: error
+  desktop-macos:
+    needs: build
+    runs-on: macos-latest
+    timeout-minutes: 30
+    outputs:
+      macos_arm64_sha256: ${{ steps.sums.outputs.macos_arm64 }}
+      macos_x86_64_sha256: ${{ steps.sums.outputs.macos_x86_64 }}
+    env:
+      VERSION: ${{ needs.build.outputs.version }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ADMIN_USER: ${{ secrets.ADMIN_USER }}
+      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+      OWN_KEY: ${{ secrets.OWN_KEY }}
+      TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
+      DOMESTIC_MIRROR: ${{ secrets.DOMESTIC_MIRROR }}
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        repository: ${{ secrets.SOURCE_REPO }}
+        token: ${{ secrets.SOURCE_TOKEN }}
+        ref: ${{ inputs.ref }}
+    - uses: actions/setup-go@v7
+      with:
+        go-version-file: go.mod
+        cache: false
+    - uses: actions/setup-node@v7
+      with:
+        node-version: 22
+        cache: npm
+        cache-dependency-path: backend/package-lock.json
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/desktop-macos-1.sh"
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/desktop-macos-2.sh"
+    - shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/desktop-macos-3.sh"
+    - if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/desktop-macos-4.sh"
+    - env:
+        RELEASE: ${{ inputs.release }}
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/desktop-macos-5.sh"
+    - env:
+        RELEASE: ${{ inputs.release }}
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/desktop-macos-6.sh"
+    - id: sums
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/desktop-macos-7.sh"
+    - if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/desktop-macos-8.sh"
+    - if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+      with:
+        name: desktop-macos
+        path: sealed/desktop-macos.tar.gpg
+        retention-days: 1
+        if-no-files-found: error
+  android-sign:
+    runs-on: ubuntu-latest
+    environment: release
+    if: inputs.release != '' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+    needs:
+    - build
+    - android
+    timeout-minutes: 15
+    outputs:
+      signed_sha256: ${{ steps.sign.outputs.signed_sha256 }}
+      signed32_sha256: ${{ steps.sign.outputs.signed32_sha256 }}
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        repository: ${{ secrets.SOURCE_REPO }}
+        token: ${{ secrets.SOURCE_READ }}
+        ref: main
+        path: trusted
+        persist-credentials: false
+    - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+      with:
+        name: android-apk
+        path: in
+    - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78
+      with:
+        distribution: temurin
+        java-version: '17'
+    - env:
+        TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      run: bash trusted/deploy/data-repo/release.sh open android-apk
+    - id: sign
+      env:
+        RELEASE: ${{ inputs.release }}
+        APK_SHA256: ${{ needs.android.outputs.apk_sha256 }}
+        APK32_SHA256: ${{ needs.android.outputs.apk32_sha256 }}
+        SRC_SHA: ${{ needs.build.outputs.sha }}
+        KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        GH_TOKEN: ${{ secrets.SOURCE_READ }}
+      run: bash trusted/deploy/data-repo/release.sh sign
+    - env:
+        TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      run: bash trusted/deploy/data-repo/release.sh seal signed-apk 'dist/signed/*-android.apk' 'dist/signed/*-android-armv7.apk'
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+      with:
+        name: signed-apk
+        path: out/signed-apk.tar.gpg
+        retention-days: 1
+        if-no-files-found: error
+  release-assets:
+    runs-on: ubuntu-latest
+    environment: release
+    if: inputs.release != '' && github.ref == 'refs/heads/main' && !inputs.test_build
+    permissions:
+      contents: read
+    needs:
+    - backend
+    - test
+    - build
+    - android
+    - installer
+    - desktop-linux
+    - desktop-macos
+    - android-sign
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        repository: ${{ secrets.SOURCE_REPO }}
+        token: ${{ secrets.SOURCE_READ }}
+        ref: main
+        path: trusted
+        persist-credentials: false
+    - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+      with:
+        name: signed-apk
+        path: in
+    - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+      with:
+        name: setup
+        path: in
+    - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+      with:
+        name: desktop-linux
+        path: in
+    - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+      with:
+        name: desktop-macos
+        path: in
+    - env:
+        TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      run: bash trusted/deploy/data-repo/release.sh open signed-apk
+    - env:
+        TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      run: bash trusted/deploy/data-repo/release.sh open setup
+    - env:
+        TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      run: bash trusted/deploy/data-repo/release.sh open desktop-linux
+    - env:
+        TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      run: bash trusted/deploy/data-repo/release.sh open desktop-macos
+    - env:
+        GH_TOKEN: ${{ secrets.SOURCE_TOKEN }}
+        VERSION: ${{ inputs.release }}
+        SRC_SHA: ${{ needs.build.outputs.sha }}
+        SIGNED_SHA256: ${{ needs.android-sign.outputs.signed_sha256 }}
+        SIGNED32_SHA256: ${{ needs.android-sign.outputs.signed32_sha256 }}
+        SETUP_SHA256: ${{ needs.installer.outputs.setup_sha256 }}
+        LINUX_X86_64_SHA256: ${{ needs.desktop-linux.outputs.linux_x86_64_sha256 }}
+        LINUX_ARM64_SHA256: ${{ needs.desktop-linux.outputs.linux_arm64_sha256 }}
+        MACOS_ARM64_SHA256: ${{ needs.desktop-macos.outputs.macos_arm64_sha256 }}
+        MACOS_X86_64_SHA256: ${{ needs.desktop-macos.outputs.macos_x86_64_sha256 }}
+        DRY_RUN: ${{ inputs.dry_run }}
+        FORCE_UPDATE: ${{ inputs.force_update }}
+        UPDATE_MESSAGE: ${{ inputs.update_message }}
+      run: bash trusted/deploy/data-repo/release.sh publish
+  test-assets:
+    runs-on: ubuntu-latest
+    environment: release
+    if: inputs.release != '' && github.ref == 'refs/heads/main' && inputs.test_build
+    permissions:
+      contents: write
+    needs:
+    - backend
+    - test
+    - build
+    - android
+    - installer
+    - desktop-linux
+    - desktop-macos
+    - android-sign
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        repository: ${{ secrets.SOURCE_REPO }}
+        token: ${{ secrets.SOURCE_READ }}
+        ref: main
+        path: trusted
+        persist-credentials: false
+    - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+      with:
+        name: signed-apk
+        path: in
+    - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+      with:
+        name: setup
+        path: in
+    - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+      with:
+        name: desktop-linux
+        path: in
+    - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+      with:
+        name: desktop-macos
+        path: in
+    - env:
+        TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      run: bash trusted/deploy/data-repo/release.sh open signed-apk
+    - env:
+        TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      run: bash trusted/deploy/data-repo/release.sh open setup
+    - env:
+        TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      run: bash trusted/deploy/data-repo/release.sh open desktop-linux
+    - env:
+        TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      run: bash trusted/deploy/data-repo/release.sh open desktop-macos
+    - env:
+        GH_TOKEN: ${{ github.token }}
+        SOURCE_READ: ${{ secrets.SOURCE_READ }}
+        VERSION: ${{ inputs.release }}
+        SRC_SHA: ${{ needs.build.outputs.sha }}
+        SIGNED_SHA256: ${{ needs.android-sign.outputs.signed_sha256 }}
+        SIGNED32_SHA256: ${{ needs.android-sign.outputs.signed32_sha256 }}
+        SETUP_SHA256: ${{ needs.installer.outputs.setup_sha256 }}
+        LINUX_X86_64_SHA256: ${{ needs.desktop-linux.outputs.linux_x86_64_sha256 }}
+        LINUX_ARM64_SHA256: ${{ needs.desktop-linux.outputs.linux_arm64_sha256 }}
+        MACOS_ARM64_SHA256: ${{ needs.desktop-macos.outputs.macos_arm64_sha256 }}
+        MACOS_X86_64_SHA256: ${{ needs.desktop-macos.outputs.macos_x86_64_sha256 }}
+        DRY_RUN: ${{ inputs.dry_run }}
+      run: bash trusted/deploy/data-repo/release.sh test
+  announce:
+    runs-on: ubuntu-latest
+    environment: release
+    if: inputs.release != '' && github.ref == 'refs/heads/main' && !inputs.dry_run && !inputs.test_build
+    permissions:
+      contents: read
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        repository: ${{ secrets.SOURCE_REPO }}
+        token: ${{ secrets.SOURCE_READ }}
+        ref: main
+        path: trusted
+        persist-credentials: false
+    - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      with:
+        go-version-file: trusted/go.mod
+        cache: false
+    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+      with:
+        node-version: 22
+        package-manager-cache: false
+    - run: bash trusted/deploy/data-repo/release.sh deps
+    - env:
+        SOURCE_TOKEN: ${{ secrets.SOURCE_TOKEN }}
+        ADMIN_USER: ${{ secrets.ADMIN_USER }}
+        ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        UPDATE_SIGNING_KEY: ${{ secrets.UPDATE_SIGNING_KEY }}
+        ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+        VERSION: ${{ inputs.release }}
+        FORCE: ${{ inputs.force_update }}
+        MESSAGE: ${{ inputs.update_message }}
+      run: bash trusted/deploy/data-repo/release.sh announce
+    needs: release-assets

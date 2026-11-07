@@ -1,0 +1,49 @@
+name: Support
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        type: choice
+        options: [waiting, reply-ticket, reply-chat, reply-mail, close-ticket, done]
+        default: waiting
+      target:
+        required: false
+      file:
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: support
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: ${{ secrets.SOURCE_REPO }}
+          token: ${{ secrets.SOURCE_READ }}
+          path: src
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        if: ${{ inputs.file != '' }}
+        with:
+          repository: ${{ secrets.SOURCE_REPO }}
+          ref: ops/support-outbox
+          token: ${{ secrets.SOURCE_READ }}
+          path: box
+          persist-credentials: false
+      - env:
+          SOURCE_TOKEN: ${{ secrets.SOURCE_TOKEN }}
+        run: python3 -I src/deploy/data-repo/support-key.py env
+      - env:
+          ACTION: ${{ inputs.action }}
+          TARGET: ${{ inputs.target }}
+          FILE: ${{ inputs.file }}
+          BOX: box
+        run: bash src/deploy/data-repo/support.sh

@@ -1,0 +1,60 @@
+name: Gauge
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gauge
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: windows-latest
+    timeout-minutes: 50
+    outputs:
+      sha: ${{ steps.fetch.outputs.sha }}
+      anc: ${{ steps.fetch.outputs.anc }}
+      r: ${{ steps.keep.outputs.r }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: ${{ secrets.SOURCE_REPO }}
+          token: ${{ secrets.SOURCE_READ }}
+          path: trusted
+          persist-credentials: false
+      - id: fetch
+        env:
+          SOURCE_READ: ${{ secrets.SOURCE_READ }}
+        run: bash trusted/deploy/data-repo/gauge-1.sh
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: src/go.mod
+          cache: false
+      - shell: pwsh
+        timeout-minutes: 40
+        run: ./trusted/deploy/data-repo/gauge-2.ps1
+      - id: keep
+        if: always()
+        shell: bash
+        run: bash trusted/deploy/data-repo/gauge-keep.sh
+  publish:
+    needs: run
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: ${{ secrets.SOURCE_REPO }}
+          token: ${{ secrets.SOURCE_TOKEN }}
+          path: trusted
+          persist-credentials: false
+      - env:
+          SOURCE_TOKEN: ${{ secrets.SOURCE_TOKEN }}
+          R: ${{ needs.run.outputs.r }}
+          SHA: ${{ needs.run.outputs.sha }}
+          ANC: ${{ needs.run.outputs.anc }}
+        run: bash trusted/deploy/data-repo/gauge-3.sh

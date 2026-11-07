@@ -1,0 +1,123 @@
+name: Stock
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        type: boolean
+        default: false
+  schedule:
+    - cron: "29 * * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stock
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      due: ${{ steps.check.outputs.due }}
+    steps:
+      - if: github.event_name == 'schedule'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: ${{ secrets.SOURCE_REPO }}
+          token: ${{ secrets.SOURCE_READ }}
+          ref: main
+          path: trusted
+          persist-credentials: false
+      - if: github.event_name == 'schedule'
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 22
+      - if: github.event_name == 'schedule'
+        run: npm ci --no-audit --no-fund --silent >/dev/null 2>&1
+        working-directory: trusted/backend
+      - id: check
+        env:
+          EVENT: ${{ github.event_name }}
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_READ: ${{ secrets.SOURCE_READ }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ "$EVENT" = schedule ]; then bash trusted/deploy/data-repo/stock.sh check; else echo "due=1" >> "$GITHUB_OUTPUT"; fi
+  build:
+    needs: check
+    if: needs.check.outputs.due == '1' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    outputs:
+      sha: ${{ steps.build.outputs.sha }}
+      sealed_sha256: ${{ steps.build.outputs.sealed_sha256 }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: ${{ secrets.SOURCE_REPO }}
+          token: ${{ secrets.SOURCE_READ }}
+          ref: main
+          path: src
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: src/go.mod
+          cache: false
+      - id: build
+        env:
+          TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+        run: bash src/deploy/data-repo/stock.sh build
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: stock
+          path: out/stock.tar.gpg
+          retention-days: 1
+          if-no-files-found: error
+  sign:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: release
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: ${{ secrets.SOURCE_REPO }}
+          token: ${{ secrets.SOURCE_READ }}
+          ref: main
+          path: trusted
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: stock
+          path: in
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: trusted/go.mod
+          cache: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 22
+      - run: npm ci --no-audit --no-fund --silent >/dev/null 2>&1
+        working-directory: trusted/backend
+      - env:
+          SRC_SHA: ${{ needs.build.outputs.sha }}
+          SEALED_SHA256: ${{ needs.build.outputs.sealed_sha256 }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+          SOURCE_READ: ${{ secrets.SOURCE_READ }}
+          UPDATE_SIGNING_KEY: ${{ secrets.UPDATE_SIGNING_KEY }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: bash trusted/deploy/data-repo/stock.sh sign
