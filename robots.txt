@@ -1,0 +1,26 @@
+# Search engines (Google, Bing, Yandex, Apple, Brave, DuckDuckGo and the AI
+# search tools that link back) may read the public pages. Crawlers that only
+# collect text to train AI models may not.
+User-agent: *
+Allow: /
+Disallow: /list/
+Disallow: /update.json
+Disallow: /dns/
+
+User-agent: GPTBot
+User-agent: CCBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: ClaudeBot
+User-agent: anthropic-ai
+User-agent: Bytespider
+User-agent: Amazonbot
+User-agent: meta-externalagent
+User-agent: cohere-ai
+User-agent: Diffbot
+User-agent: omgili
+User-agent: MistralAI-Training
+User-agent: Google-CloudVertexBot
+Disallow: /
+
+Sitemap: https://albatrossvpn.online/sitemap.xml

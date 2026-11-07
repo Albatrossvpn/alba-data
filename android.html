@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-18414057252');
+  gtag('config', 'G-SLLT1LX9F6');
+  function gtagLoad(){if(gtagLoad.on)return;gtagLoad.on=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18414057252';document.head.appendChild(s);}
+  addEventListener('load',gtagLoad);
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Set up a VPN on Android · Albatross VPN</title>
+<meta name="description" content="Set up Albatross VPN on an Android phone: install the APK from our website or the Telegram bot, sign in, and keep the VPN always on.">
+<link rel="canonical" href="https://albatrossvpn.online/android">
+<meta property="og:site_name" content="Albatross VPN">
+<meta property="og:title" content="Set up a VPN on Android · Albatross VPN">
+<meta property="og:description" content="Install the APK, sign in, press one button, keep it always on.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://albatrossvpn.online/android">
+<meta property="og:image" content="https://albatrossvpn.online/img/hero-1600.jpg">
+<meta property="og:image:width" content="1600">
+<meta property="og:image:height" content="900">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/alba-data/favicon.ico?v=2" sizes="32x32">
+<link rel="icon" href="/alba-data/favicon.svg?v=2" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/alba-data/apple-touch-icon.png?v=2">
+<link rel="preload" href="/alba-data/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/alba-data/site.css">
+<link rel="stylesheet" href="/alba-data/support.css">
+<meta name="theme-color" content="#ffffff">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="/alba-data/"><img src="/alba-data/icon.svg?v=2" alt="" width="32" height="32">Albatross</a>
+    <nav aria-label="Main">
+      <a href="/alba-data/#features">Features</a>
+      <a href="/alba-data/#plans">Plans</a>
+      <a href="/alba-data/#download">Download</a>
+      <a href="/alba-data/guides">Guides</a>
+      <a href="/alba-data/help">Help</a>
+      <a href="https://accounts.albatrossvpn.online/account">Account</a>
+    </nav>
+    <a class="btn primary" href="/alba-data/trial">Free trial</a>
+    <details class="menu"><summary aria-label="Menu"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></summary><div class="menu-panel"><a href="/alba-data/#features">Features</a><a href="/alba-data/#plans">Plans</a><a href="/alba-data/#download">Download</a><a href="/alba-data/#iphone">iPhone and iPad</a><a href="/alba-data/guides">Setup guides</a><a href="/alba-data/help">Help</a><a href="/alba-data/#resellers">Resellers</a><a href="https://accounts.albatrossvpn.online/account">Account</a></div></details>
+  </div>
+</header>
+
+<main class="wrap help" id="main">
+  <div class="center">
+    <span class="eyebrow">Android</span>
+    <h1>Set up a VPN on Android.</h1>
+    <p class="lead">Install the APK, sign in and press one button. Then keep the VPN always on with Android's own setting.</p>
+  </div>
+
+  <section id="get">
+    <h2>Download</h2>
+    <div class="get"><a class="btn primary" data-dl="android-arm64-v8a" href="https://github.com/Albatrossvpn/alba-data/releases">Download the APK</a></div>
+    <p class="sha pending">SHA-256: <code data-sha="android-arm64-v8a">0000000000000000000000000000000000000000000000000000000000000000</code></p>
+    <p class="muted">Slow connection? <a href="https://github.com/Albatrossvpn/alba-data/releases/latest" rel="noopener">The same file from GitHub</a>.</p>
+    <details class="warn"><summary>Seeing a warning?</summary><p>If Android says your browser may not install apps, tap <b>Settings</b>, turn on <b>Allow from this source</b>, go back and tap <b>Install</b>. If Play Protect warns about the app, tap <b>More details</b>, then <b>Install anyway</b>.</p><div class="mocks"><img src="/alba-data/img/warn-android-1.svg" alt="" width="220" height="140" loading="lazy"><img src="/alba-data/img/warn-android-2.svg" alt="" width="220" height="140" loading="lazy"></div></details>
+    <p class="small" id="check">To check the APK on the phone, open it in a file manager or checksum app that shows a file's SHA-256, and compare it with the one above. On a computer: <code>certutil -hashfile &lt;file&gt; SHA256</code> on Windows, <code>shasum -a 256 &lt;file&gt;</code> on a Mac, <code>sha256sum &lt;file&gt;</code> on Linux.</p>
+    <div class="get" data-needs="android-armeabi-v7a"><a class="btn" data-dl="android-armeabi-v7a" href="https://github.com/Albatrossvpn/alba-data/releases">Old 32-bit phones (armv7)</a></div>
+    <p class="sha pending">SHA-256: <code data-sha="android-armeabi-v7a">0000000000000000000000000000000000000000000000000000000000000000</code></p>
+  </section>
+
+  <section id="steps">
+    <h2>Steps</h2>
+    <p>Android 6 and newer. Nearly every phone from recent years is 64-bit and takes the usual APK; an old 32-bit phone takes the 32-bit APK (armv7). Albatross is not on Google Play, so your phone asks once to allow installs from your browser or from Telegram. You need an Albatross account: a username and a password, nothing else. <a href="/alba-data/trial">Get a free trial account</a>, or <a href="/alba-data/#buy">buy one</a>.</p>
+    <ol>
+      <li>Get the app: tap <b>Download the APK</b> above. Or, in our Telegram bot, tap <b>Get the app here in Telegram</b> and the bot sends the file in the chat. On a slow connection, take the same file from GitHub.</li>
+      <li>Open the downloaded file. If the phone does not allow unknown apps from your browser, tap <b>Settings</b>, allow your browser (or Telegram), go back and tap <b>Install</b>. If Google Play Protect warns about an app that is not from Google Play, tap <b>More details</b>, then <b>Install anyway</b>.</li>
+      <li>Open Albatross and sign in with your <b>username</b> (not an email) and password. Paste the password exactly, with no space before or after it.</li>
+      <li>Press the big button. When Android asks to allow the VPN, tap <b>OK</b>.</li>
+      <li>Leave the location on <b>Fastest location</b> and the connection setting on <b>Automatic</b>.</li>
+    </ol>
+  </section>
+
+  <section id="tips">
+    <h2>Always-on VPN and other settings</h2>
+    <ul>
+      <li><b>Always-on VPN.</b> In Albatross's Settings, tap <b>Kill switch</b>: it opens Android's own VPN settings. Turn on <b>Always-on VPN</b> so the VPN starts with the phone, and <b>Block connections without VPN</b> if nothing should go out while it is off.</li>
+      <li><b>Turn it off.</b> Press the big button again, or turn the VPN off in Android's VPN settings.</li>
+      <li><b>Local apps outside the VPN.</b> On Silver plans and up, <b>Local apps outside the VPN</b> lets your country's banking, payment, taxi and shopping apps work while you are connected.</li>
+      <li>&ldquo;App not installed&rdquo; can mean the phone is an old 32-bit one, which takes the 32-bit APK (armv7) instead, from the download page from version 1.3.6 on; or that an earlier Albatross version has to be removed first.</li>
+      <li>Later updates install from inside the app, over the one you have.</li>
+    </ul>
+  </section>
+
+  <section id="more">
+    <h2>More</h2>
+    <p><a href="/alba-data/android-tv">Android TV and Google TV</a> · <a href="/alba-data/share">Share with other devices</a> · <a href="/alba-data/windows">Windows guide</a>. <a href="/alba-data/guides">All setup guides</a>, or <a href="/alba-data/help">troubleshooting</a>. No account yet? <a href="/alba-data/trial">Start the free trial</a>.</p>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <a class="brand" href="/alba-data/"><img src="/alba-data/icon.svg?v=2" alt="" width="30" height="30">Albatross</a>
+        <p>A VPN for Windows, Android, Mac and Linux that picks a location for you. iPhone and iPad connect through a connection app from the App Store.</p>
+        <address>Albatross<br>3401 N. Miami Ave, Suite 230<br>Miami, FL 33127<br>United States</address>
+        <p class="contact"><a href="mailto:support@albatrossvpn.online">support@albatrossvpn.online</a></p>
+      </div>
+      <div>
+        <h2>Product</h2>
+        <a href="/alba-data/#features">Features</a>
+        <a href="/alba-data/#plans">Plans</a>
+        <a href="/alba-data/trial">Free trial</a>
+        <a href="/alba-data/#resellers">Resellers</a>
+        <a href="https://accounts.albatrossvpn.online/account">Your account</a>
+      </div>
+      <div>
+        <h2>Get the app</h2>
+        <a href="/alba-data/#dl-windows">Windows</a>
+        <a href="/alba-data/#dl-android">Android</a>
+        <a href="/alba-data/#dl-mac">Mac</a>
+        <a href="/alba-data/#dl-linux">Linux</a>
+        <a href="/alba-data/android-tv">Android TV</a>
+        <a href="/alba-data/tv">Other TVs</a>
+        <a href="/alba-data/#iphone">iPhone and iPad</a>
+      </div>
+      <div>
+        <h2>Resources</h2>
+        <a href="https://github.com/Albatrossvpn/alba-data/releases">All downloads</a>
+        <a href="/alba-data/guides">Setup guides</a>
+        <a href="/alba-data/help">Help</a>
+        <a href="/alba-data/#faq">Questions</a>
+        <a href="https://accounts.albatrossvpn.online/privacy">Privacy</a>
+        <a href="https://accounts.albatrossvpn.online/terms">Terms</a>
+      </div>
+    </div>
+    <div class="legal">
+      <span>© <span data-year>2026</span> Albatross. Bundled open-source components keep their own licenses.</span>
+      <span>This page loads Google's ad-measurement and analytics tags, which may set cookies. <a href="https://accounts.albatrossvpn.online/privacy#cookies">Details</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="/alba-data/site.js"></script>
+<script src="/alba-data/support.js" data-api="https://accounts.albatrossvpn.online" defer></script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-18414057252');
+  gtag('config', 'G-SLLT1LX9F6');
+  function gtagLoad(){if(gtagLoad.on)return;gtagLoad.on=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18414057252';document.head.appendChild(s);}
+  addEventListener('load',gtagLoad);
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Setup help and troubleshooting · Albatross VPN</title>
+<meta name="description" content="Set up Albatross VPN on Windows, Android, Mac, Linux, iPhone and iPad, and fix the usual problems: no connection, slow speed, too many devices, local apps.">
+<link rel="canonical" href="https://albatrossvpn.online/help">
+<meta property="og:site_name" content="Albatross VPN">
+<meta property="og:title" content="Help · Albatross VPN">
+<meta property="og:description" content="Set up Albatross VPN on Windows, Android, Mac, Linux, iPhone and iPad, and fix the usual problems.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://albatrossvpn.online/help">
+<meta property="og:image" content="https://albatrossvpn.online/img/iphone-1600.jpg">
+<meta property="og:image:width" content="1600">
+<meta property="og:image:height" content="900">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/alba-data/favicon.ico?v=2" sizes="32x32">
+<link rel="icon" href="/alba-data/favicon.svg?v=2" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/alba-data/apple-touch-icon.png?v=2">
+<link rel="preload" href="/alba-data/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/alba-data/site.css">
+<link rel="stylesheet" href="/alba-data/support.css">
+<meta name="theme-color" content="#ffffff">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="/alba-data/"><img src="/alba-data/icon.svg?v=2" alt="" width="32" height="32">Albatross</a>
+    <nav aria-label="Main">
+      <a href="/alba-data/#features">Features</a>
+      <a href="/alba-data/#plans">Plans</a>
+      <a href="/alba-data/#download">Download</a>
+      <a href="/alba-data/guides">Guides</a>
+      <a href="/alba-data/help">Help</a>
+      <a href="https://accounts.albatrossvpn.online/account">Account</a>
+    </nav>
+    <a class="btn primary" href="/alba-data/trial">Free trial</a>
+    <details class="menu"><summary aria-label="Menu"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></summary><div class="menu-panel"><a href="/alba-data/#features">Features</a><a href="/alba-data/#plans">Plans</a><a href="/alba-data/#download">Download</a><a href="/alba-data/#iphone">iPhone and iPad</a><a href="/alba-data/guides">Setup guides</a><a href="/alba-data/help">Help</a><a href="/alba-data/#resellers">Resellers</a><a href="https://accounts.albatrossvpn.online/account">Account</a></div></details>
+  </div>
+</header>
+
+<main class="wrap help" id="main">
+  <div class="center">
+    <span class="eyebrow">Help</span>
+    <h1>Set up Albatross.</h1>
+    <p class="lead">Install, sign in, press the button. The steps for each device, and what to do when something does not work.</p>
+    <p class="jump"><a href="#android">Android</a> · <a href="#windows">Windows</a> · <a href="#apple">iPhone and iPad</a> · <a href="#desktop">Mac and Linux</a> · <a href="#trouble">Troubleshooting</a></p>
+  </div>
+
+  <section id="account">
+    <h2>Before you start</h2>
+    <p>You need an Albatross account: a username and a password, nothing else. <a href="/alba-data/trial">Start a free trial</a>, or buy one, or add data to the one you have: in our Telegram bot with Telegram Stars, or on your account page with USDT or another coin, or by card where your account page offers it. Plans and prices are shown in our <a href="https://t.me/AlbatrossHelp_bot?start=buy" rel="noopener">Telegram bot</a> and on your <a href="https://accounts.albatrossvpn.online/account">account page</a> after you sign in. Your account page also shows what is left of your data and when the account ends.</p>
+  </section>
+
+  <section id="android">
+    <h2>Android</h2>
+    <p><a href="/alba-data/android">Android guide on its own page</a>. Android 6 and newer, on 64-bit phones (nearly every phone from recent years). Albatross is not on Google Play, so your phone asks once to allow installs from your browser.</p>
+    <ol>
+      <li>In <a href="/alba-data/#download">the Download section</a>, tap <b>Download the APK</b>. On a slow connection, take the same file from the GitHub link under the button.</li>
+      <li>Open the downloaded file. If the phone says installs from this source are not allowed, tap <b>Settings</b>, allow your browser, go back and tap <b>Install</b>.</li>
+      <li>Open Albatross and sign in. No account yet? Tap <b>No account? Buy one in Telegram</b>.</li>
+      <li>Press the big button. When Android asks to allow the VPN, tap <b>OK</b>.</li>
+      <li>Leave the location on <b>Fastest location</b> and the connection setting on <b>Automatic</b>.</li>
+    </ol>
+    <ul>
+      <li>“App not installed” can mean the phone is an old 32-bit one: it takes the 32-bit APK (armv7) instead, from the download page from version 1.3.6 on. TVs: see the <a href="/alba-data/android-tv">Android TV guide</a>.</li>
+      <li><b>Always-on VPN</b> in the app's Settings opens the system's switches that keep the VPN on all the time.</li>
+      <li>On Silver plans and up, <b>Local apps outside the VPN</b> lets your country's banking, payment, taxi and shopping apps work while you are connected.</li>
+      <li>Later updates install from inside the app, over the one you have.</li>
+    </ul>
+  </section>
+
+  <section id="windows">
+    <h2>Windows</h2>
+    <p><a href="/alba-data/windows">Windows guide on its own page</a>. Windows 10 and 11, 64-bit.</p>
+    <ol>
+      <li>In <a href="/alba-data/#download">the Download section</a>, click <b>Download for Windows</b> (or the GitHub link on a slow connection).</li>
+      <li>Run the installer. If Windows says <b>Windows protected your PC</b>, click <b>More info</b>, then <b>Run anyway</b>: the installer is not code-signed yet.</li>
+      <li>Open Albatross, sign in and click the big button.</li>
+      <li>Leave the location on <b>Fastest location</b> and the connection setting on <b>Automatic</b>.</li>
+    </ol>
+    <ul>
+      <li>By default Albatross sets the system proxy, which browsers and most apps use. If a game or an app does not go through it, turn on <b>Protect the whole device</b> (Gold plans and up).</li>
+      <li>Do not run another VPN at the same time.</li>
+      <li>Every file has its SHA-256 fingerprint next to its download button; the <a href="/alba-data/windows#check">Windows guide</a> shows how to check it.</li>
+    </ul>
+  </section>
+
+  <section id="apple">
+    <h2>iPhone and iPad</h2>
+    <p>There is no Albatross app in the App Store. Your servers go into a connection app from the App Store instead. iOS 15 or newer.</p>
+    <ol>
+      <li>Install a connection app from the App Store: <b>V2Box</b> or <b>Streisand</b> are free. Shadowrocket, Hiddify and sing-box work too.</li>
+      <li>In Safari, open your <a href="https://accounts.albatrossvpn.online/account">account page</a> and sign in.</li>
+      <li>Optional: tap <b>Share</b>, then <b>Add to Home Screen</b>, so the page opens like an app.</li>
+      <li>On the account page, tap the button that adds your servers to your app: all servers or one country. The connection app opens; confirm.</li>
+      <li>In the connection app, pick one of the servers named Albatross and connect. The first time, iOS asks to add a VPN configuration: tap <b>Allow</b>.</li>
+    </ol>
+    <ul>
+      <li>The servers refresh by themselves. If they stop working, refresh the Albatross subscription in the connection app, or add it again from the account page.</li>
+    </ul>
+  </section>
+
+  <section id="desktop">
+    <h2>Mac and Linux</h2>
+    <p>Mac and Linux have their own Albatross app. Download it in <a href="/alba-data/#download">the Download section</a> and follow the <a href="/alba-data/macos">Mac guide</a> or the <a href="/alba-data/linux">Linux guide</a>: a few steps, then sign in and press the button. On a Mac, a connection app from the Mac App Store (V2Box, Streisand, Hiddify or sing-box) works too, with the same steps as on iPhone.</p>
+  </section>
+  <section id="trouble" class="faq">
+    <h2>Troubleshooting</h2>
+    <details open><summary>It does not connect</summary>
+      <p>Try these in order:</p>
+      <ol>
+        <li>Update to the newest version: the <b>Update</b> button in the app, or the newest file from the download section.</li>
+        <li>Set the device's date and time to automatic.</li>
+        <li>Leave the connection setting on <b>Automatic</b>.</li>
+        <li>Choose another location, or <b>Fastest location</b>.</li>
+        <li>Switch between Wi-Fi and mobile data. On a heavily filtered network, give it up to a minute.</li>
+        <li>Close and reopen the app, and make sure no other VPN is on.</li>
+        <li>Check on your account page that the data is not used up and the account has not ended. If it has, add data in the Telegram bot.</li>
+        <li>Still nothing? Send <b>/human</b> to our Telegram bot, or use the chat on this page, with the exact message you see, your device, Wi-Fi or mobile data, and the app version.</li>
+      </ol>
+    </details>
+    <details><summary>It is slow</summary><p>Albatross measures the real speed of its servers and moves to a faster one by itself. If it stays slow, choose <b>Fastest location</b> or another location, switch networks, update the app and reconnect.</p></details>
+    <details><summary>It says too many devices</summary><p>Every device your plan allows is connected already. Disconnect or sign out on a device you are not using, or add data to move up to a plan with more devices: Bronze has 1, Silver 2, Gold 4.</p></details>
+    <details><summary>A banking or taxi app does not open while connected</summary><p>Local sites open directly, outside the VPN, through <b>Bypass local sites</b>, which is on from the start. For local apps on Android, turn on <b>Local apps outside the VPN</b> (Silver and up). On Bronze, disconnect while you use that app.</p></details>
+    <details><summary>I forgot my password</summary><p>If you bought the account in our Telegram bot, send <b>/password</b> to the bot from the same Telegram account. For any other account, send <b>/human</b> and our team will help. Never write a password in a chat.</p></details>
+    <details><summary>The app asks me to update before it connects</summary><p>That is a required update. Tap <b>Update</b> in the app, or install the newest file from the download section; your account and settings stay.</p></details>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <a class="brand" href="/alba-data/"><img src="/alba-data/icon.svg?v=2" alt="" width="30" height="30">Albatross</a>
+        <p>A VPN for Windows, Android, Mac and Linux that picks a location for you. iPhone and iPad connect through a connection app from the App Store.</p>
+        <address>Albatross<br>3401 N. Miami Ave, Suite 230<br>Miami, FL 33127<br>United States</address>
+        <p class="contact"><a href="mailto:support@albatrossvpn.online">support@albatrossvpn.online</a></p>
+      </div>
+      <div>
+        <h2>Product</h2>
+        <a href="/alba-data/#features">Features</a>
+        <a href="/alba-data/#plans">Plans</a>
+        <a href="/alba-data/trial">Free trial</a>
+        <a href="/alba-data/#resellers">Resellers</a>
+        <a href="https://accounts.albatrossvpn.online/account">Your account</a>
+      </div>
+      <div>
+        <h2>Get the app</h2>
+        <a href="/alba-data/#dl-windows">Windows</a>
+        <a href="/alba-data/#dl-android">Android</a>
+        <a href="/alba-data/#dl-mac">Mac</a>
+        <a href="/alba-data/#dl-linux">Linux</a>
+        <a href="/alba-data/android-tv">Android TV</a>
+        <a href="/alba-data/tv">Other TVs</a>
+        <a href="/alba-data/#iphone">iPhone and iPad</a>
+      </div>
+      <div>
+        <h2>Resources</h2>
+        <a href="https://github.com/Albatrossvpn/alba-data/releases">All downloads</a>
+        <a href="/alba-data/guides">Setup guides</a>
+        <a href="/alba-data/help">Help</a>
+        <a href="/alba-data/#faq">Questions</a>
+        <a href="https://accounts.albatrossvpn.online/privacy">Privacy</a>
+        <a href="https://accounts.albatrossvpn.online/terms">Terms</a>
+      </div>
+    </div>
+    <div class="legal">
+      <span>© <span data-year>2026</span> Albatross. Bundled open-source components keep their own licenses.</span>
+      <span>This page loads Google's ad-measurement and analytics tags, which may set cookies. <a href="https://accounts.albatrossvpn.online/privacy#cookies">Details</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="/alba-data/site.js"></script>
+<script src="/alba-data/support.js" data-api="https://accounts.albatrossvpn.online" defer></script>
+</body>
+</html>
