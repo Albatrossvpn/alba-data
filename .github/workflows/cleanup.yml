@@ -2,7 +2,7 @@ name: Cleanup
 
 on:
   workflow_run:
-    workflows: [Update, Refresh, Release, Announce, Wrap, Deploy, Mirror, Check, Tally, Roster, Rig, Pack, Meter, Support, Support key, Outreach, Outreach key, Stock, Gauge]
+    workflows: [Update, Refresh, Release, Announce, Wrap, Deploy, Mirror, Check, Tally, Roster, Rig, Pack, Meter, Support, Support key, Outreach, Outreach key, Stock, Gauge, Hosts]
     types: [completed]
   schedule:
     - cron: "41 * * * *"
@@ -41,7 +41,7 @@ jobs:
             day="$(date -u -d '-1 day' +%Y-%m-%dT%H:%M:%SZ)"
             hour="$(date -u -d '-1 hour' +%Y-%m-%dT%H:%M:%SZ)"
             gh api --paginate "repos/$R/actions/runs?per_page=100&status=completed" \
-              --jq ".workflow_runs[] | select((.updated_at < \"$day\") or ((.name == \"Cleanup\" or .name == \"Update\" or .name == \"Check\" or .name == \"Tally\" or .name == \"Roster\" or .name == \"Rig\" or .name == \"Pack\" or .name == \"Meter\" or .name == \"Support\" or .name == \"Support key\" or .name == \"Outreach\" or .name == \"Outreach key\" or .name == \"Release\" or .name == \"Announce\" or .name == \"Wrap\" or .name == \"Stock\" or .name == \"Gauge\") and .updated_at < \"$hour\")) | .id" 2>/dev/null |
+              --jq ".workflow_runs[] | select((.updated_at < \"$day\") or ((.name == \"Cleanup\" or .name == \"Update\" or .name == \"Check\" or .name == \"Tally\" or .name == \"Roster\" or .name == \"Rig\" or .name == \"Pack\" or .name == \"Meter\" or .name == \"Support\" or .name == \"Support key\" or .name == \"Outreach\" or .name == \"Outreach key\" or .name == \"Release\" or .name == \"Announce\" or .name == \"Wrap\" or .name == \"Stock\" or .name == \"Gauge\" or .name == \"Hosts\") and .updated_at < \"$hour\")) | .id" 2>/dev/null |
               while read -r id; do [ "$id" != "$SELF" ] && del_run "$id"; done
             gh api --paginate "repos/$R/actions/caches?per_page=100" --jq ".actions_caches[] | select(.last_accessed_at < \"$day\") | .id" 2>/dev/null |
               while read -r c; do gh api -X DELETE "repos/$R/actions/caches/$c" >/dev/null 2>&1; done
