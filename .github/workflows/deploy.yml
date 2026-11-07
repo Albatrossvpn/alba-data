@@ -31,7 +31,7 @@ jobs:
       CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL }}
       SUPPORT_URL: ${{ secrets.SUPPORT_URL }}
       MIN_CLIENT: ${{ inputs.min_client }}
-      HELP_KEY: ${{ secrets.HELP_KEY }}
+      HELP_KEY: ${{ secrets.HELP_KEY || secrets.ANTHROPIC_API_KEY }}
       SOURCE_TOKEN: ${{ secrets.SOURCE_TOKEN }}
       GH_TOKEN: ${{ github.token }}
     steps:
