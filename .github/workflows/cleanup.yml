@@ -2,7 +2,7 @@ name: Cleanup
 
 on:
   workflow_run:
-    workflows: [Update, Refresh, Release, Announce, Wrap, Deploy, Mirror, Check, Tally, Roster, Rig, Pack, Meter, Support, Support key, Outreach, Outreach key, Stock, Gauge, Hosts, Sample, Relay key, Share]
+    workflows: [Update, Refresh, Release, Announce, Wrap, Deploy, Mirror, Check, Tally, Roster, Rig, Pack, Meter, Support, Support key, Outreach, Outreach key, Stock, Gauge, Hosts, Sample, Relay key, Share, Watch]
     types: [completed]
   schedule:
     - cron: "41 * * * *"
