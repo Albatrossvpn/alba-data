@@ -64,6 +64,7 @@ jobs:
       OWN_KEY: ${{ secrets.OWN_KEY }}
       GLOBALPING_TOKEN: ${{ secrets.GLOBALPING_TOKEN }}
       GLOBALPING_TAGS: ${{ secrets.GLOBALPING_TAGS }}
+      RIPE_ATLAS_KEY: ${{ secrets.RIPE_ATLAS_KEY }}
       SOURCE_TOKEN: ${{ secrets.SOURCE_TOKEN }}
       TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
       READ_SEALED: ${{ github.workspace }}/read
