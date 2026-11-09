@@ -37,7 +37,10 @@ jobs:
             gh api --paginate "repos/$R/actions/caches?per_page=100" --jq ".actions_caches[] | select(.key | contains(\"-$RUN-\")) | .id" 2>/dev/null |
               while read -r c; do gh api -X DELETE "repos/$R/actions/caches/$c" >/dev/null 2>&1; done
             { [ "$RESULT" = success ] || [ "$NAME" = Sample ]; } && [ "$NAME" != Update ] && del_run "$RUN"
-          else
+          fi
+          # The sweep runs at the end of every Cleanup, not only on the hourly
+          # schedule: GitHub skips scheduled runs here at times.
+          {
             day="$(date -u -d '-1 day' +%Y-%m-%dT%H:%M:%SZ)"
             hour="$(date -u -d '-1 hour' +%Y-%m-%dT%H:%M:%SZ)"
             gh api --paginate "repos/$R/actions/workflows?per_page=100" --jq '.workflows[].id' 2>/dev/null |
@@ -54,5 +57,5 @@ jobs:
             fortnight="$(date -u -d '-14 days' +%Y-%m-%dT%H:%M:%SZ)"
             gh api --paginate "repos/$R/releases?per_page=100" --jq ".[] | select(.draft and (.tag_name | startswith(\"test-\")) and .created_at < \"$fortnight\") | .id" 2>/dev/null |
               while read -r d; do gh api -X DELETE "repos/$R/releases/$d" >/dev/null 2>&1; done
-          fi
+          }
           echo done
