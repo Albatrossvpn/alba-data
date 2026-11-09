@@ -1,0 +1,47 @@
+name: Relay key
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        required: true
+        default: pub
+
+permissions:
+  contents: read
+
+concurrency:
+  group: relay-key
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: ${{ secrets.SOURCE_REPO }}
+          token: ${{ secrets.SOURCE_READ }}
+          path: src
+          persist-credentials: false
+      - run: pip install --quiet cryptography==46.0.3 >"$RUNNER_TEMP/log" 2>&1
+      - if: inputs.mode == 'pub'
+        env:
+          SOURCE_TOKEN: ${{ secrets.SOURCE_TOKEN }}
+        run: python3 -I src/deploy/data-repo/relay-key.py pub
+      - if: inputs.mode == 'set'
+        env:
+          SOURCE_TOKEN: ${{ secrets.SOURCE_TOKEN }}
+        run: python3 -I src/deploy/data-repo/relay-key.py open src/deploy/data-repo/relay-key.sealed "$RUNNER_TEMP/k"
+      - if: inputs.mode == 'set'
+        run: cd src/backend && npm ci --ignore-scripts --no-audit --no-fund --silent >>"$RUNNER_TEMP/log" 2>&1
+      - if: inputs.mode == 'set'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          cd src/backend
+          if npx wrangler secret put RELAY_SIGN_KEY --name albatross-accounts <"$RUNNER_TEMP/k" >>"$RUNNER_TEMP/log" 2>&1; then echo "set: yes"; else echo "set: no"; exit 1; fi
+      - if: always()
+        run: shred -u "$RUNNER_TEMP/k" "$RUNNER_TEMP/log" 2>/dev/null || rm -f "$RUNNER_TEMP/k" "$RUNNER_TEMP/log"
