@@ -78,7 +78,7 @@ jobs:
         with:
           name: stock
           path: out/stock.tar.gpg
-          retention-days: 1
+          retention-days: 3
           if-no-files-found: error
   sign:
     needs: build
