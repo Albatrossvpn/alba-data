@@ -212,10 +212,11 @@ jobs:
     - if: inputs.release == '' && !startsWith(github.ref, 'refs/tags/v') && runner.environment == 'github-hosted'
       shell: bash
       run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-5.sh"
-    - if: inputs.release == '' && !startsWith(github.ref, 'refs/tags/v') && runner.environment == 'github-hosted'
+    - id: kvm
+      if: inputs.release == '' && !startsWith(github.ref, 'refs/tags/v') && runner.environment == 'github-hosted'
       shell: bash
       run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-6.sh"
-    - if: inputs.release == '' && !startsWith(github.ref, 'refs/tags/v') && runner.environment == 'github-hosted'
+    - if: (success() || failure()) && steps.kvm.outcome == 'success'
       timeout-minutes: 10
       uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
       with:
@@ -225,7 +226,23 @@ jobs:
         disable-animations: true
         emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
         script: bash build/android/selftest.sh
-    - if: inputs.release == '' && !startsWith(github.ref, 'refs/tags/v') && runner.environment == 'github-hosted'
+    - if: (success() || failure()) && steps.kvm.outcome == 'success'
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-7.sh"
+    - if: (success() || failure()) && steps.kvm.outcome == 'success'
+      timeout-minutes: 10
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+      with:
+        api-level: 31
+        arch: x86_64
+        target: google_apis
+        disable-animations: true
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+        script: bash build/android/selftest.sh
+    - if: (success() || failure()) && steps.kvm.outcome == 'success'
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-8.sh"
+    - if: (success() || failure()) && steps.kvm.outcome == 'success'
       timeout-minutes: 10
       uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
       with:
@@ -235,32 +252,35 @@ jobs:
         disable-animations: true
         emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
         script: bash build/android/selftest.sh
-    - if: inputs.release == '' && !startsWith(github.ref, 'refs/tags/v') && runner.environment == 'github-hosted'
-      timeout-minutes: 10
+    - if: (success() || failure()) && steps.kvm.outcome == 'success'
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-9.sh"
+    - if: (success() || failure()) && steps.kvm.outcome == 'success'
+      timeout-minutes: 12
       uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
       with:
-        api-level: 26
+        api-level: 36
         arch: x86_64
         target: google_apis
-        disk-size: 2048M
         disable-animations: true
         emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
         script: bash build/android/selftest.sh
-    - if: inputs.release == '' && !startsWith(github.ref, 'refs/tags/v') && runner.environment == 'github-hosted'
-      continue-on-error: true
-      timeout-minutes: 8
+    - if: (success() || failure()) && steps.kvm.outcome == 'success'
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-10.sh"
+    - if: (success() || failure()) && steps.kvm.outcome == 'success'
+      timeout-minutes: 12
       uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
       with:
-        api-level: 23
+        api-level: '37.0'
         arch: x86_64
         target: google_apis
-        disk-size: 2048M
         disable-animations: true
         emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
         script: bash build/android/selftest.sh
     - if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
       shell: bash
-      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-7.sh"
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-11.sh"
     - if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
       uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
       with:
