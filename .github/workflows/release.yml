@@ -216,7 +216,9 @@ jobs:
       if: inputs.release == '' && !startsWith(github.ref, 'refs/tags/v') && runner.environment == 'github-hosted'
       shell: bash
       run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-6.sh"
-    - if: (success() || failure()) && steps.kvm.outcome == 'success'
+    - id: emu34
+      if: (success() || failure()) && steps.kvm.outcome == 'success'
+      continue-on-error: true
       timeout-minutes: 10
       uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
       with:
@@ -225,11 +227,27 @@ jobs:
         target: google_apis
         disable-animations: true
         emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
-        script: bash build/android/selftest.sh
-    - if: (success() || failure()) && steps.kvm.outcome == 'success'
+        script: bash build/android/selftest.sh 34 1
+    - id: first34
+      if: (success() || failure()) && steps.kvm.outcome == 'success'
       shell: bash
       run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-7.sh"
+    - if: (success() || failure()) && steps.first34.outputs.again == 'true'
+      timeout-minutes: 10
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+      with:
+        api-level: 34
+        arch: x86_64
+        target: google_apis
+        disable-animations: true
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+        script: bash build/android/selftest.sh 34 2
     - if: (success() || failure()) && steps.kvm.outcome == 'success'
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-8.sh"
+    - id: emu31
+      if: (success() || failure()) && steps.kvm.outcome == 'success'
+      continue-on-error: true
       timeout-minutes: 10
       uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
       with:
@@ -238,11 +256,27 @@ jobs:
         target: google_apis
         disable-animations: true
         emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
-        script: bash build/android/selftest.sh
+        script: bash build/android/selftest.sh 31 1
+    - id: first31
+      if: (success() || failure()) && steps.kvm.outcome == 'success'
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-9.sh"
+    - if: (success() || failure()) && steps.first31.outputs.again == 'true'
+      timeout-minutes: 10
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+      with:
+        api-level: 31
+        arch: x86_64
+        target: google_apis
+        disable-animations: true
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+        script: bash build/android/selftest.sh 31 2
     - if: (success() || failure()) && steps.kvm.outcome == 'success'
       shell: bash
-      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-8.sh"
-    - if: (success() || failure()) && steps.kvm.outcome == 'success'
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-10.sh"
+    - id: emu30
+      if: (success() || failure()) && steps.kvm.outcome == 'success'
+      continue-on-error: true
       timeout-minutes: 10
       uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
       with:
@@ -251,11 +285,27 @@ jobs:
         target: google_apis
         disable-animations: true
         emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
-        script: bash build/android/selftest.sh
+        script: bash build/android/selftest.sh 30 1
+    - id: first30
+      if: (success() || failure()) && steps.kvm.outcome == 'success'
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-11.sh"
+    - if: (success() || failure()) && steps.first30.outputs.again == 'true'
+      timeout-minutes: 10
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+      with:
+        api-level: 30
+        arch: x86_64
+        target: google_apis
+        disable-animations: true
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+        script: bash build/android/selftest.sh 30 2
     - if: (success() || failure()) && steps.kvm.outcome == 'success'
       shell: bash
-      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-9.sh"
-    - if: (success() || failure()) && steps.kvm.outcome == 'success'
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-12.sh"
+    - id: emu36
+      if: (success() || failure()) && steps.kvm.outcome == 'success'
+      continue-on-error: true
       timeout-minutes: 12
       uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
       with:
@@ -264,11 +314,27 @@ jobs:
         target: google_apis
         disable-animations: true
         emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
-        script: bash build/android/selftest.sh
+        script: bash build/android/selftest.sh 36 1
+    - id: first36
+      if: (success() || failure()) && steps.kvm.outcome == 'success'
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-13.sh"
+    - if: (success() || failure()) && steps.first36.outputs.again == 'true'
+      timeout-minutes: 12
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+      with:
+        api-level: 36
+        arch: x86_64
+        target: google_apis
+        disable-animations: true
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+        script: bash build/android/selftest.sh 36 2
     - if: (success() || failure()) && steps.kvm.outcome == 'success'
       shell: bash
-      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-10.sh"
-    - if: (success() || failure()) && steps.kvm.outcome == 'success'
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-14.sh"
+    - id: emu370
+      if: (success() || failure()) && steps.kvm.outcome == 'success'
+      continue-on-error: true
       timeout-minutes: 12
       uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
       with:
@@ -277,10 +343,24 @@ jobs:
         target: google_apis
         disable-animations: true
         emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
-        script: bash build/android/selftest.sh
+        script: bash build/android/selftest.sh 37.0 1
+    - id: first370
+      if: (success() || failure()) && steps.kvm.outcome == 'success'
+      shell: bash
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-15.sh"
+    - if: (success() || failure()) && steps.first370.outputs.again == 'true'
+      timeout-minutes: 12
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+      with:
+        api-level: '37.0'
+        arch: x86_64
+        target: google_apis
+        disable-animations: true
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+        script: bash build/android/selftest.sh 37.0 2
     - if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
       shell: bash
-      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-11.sh"
+      run: bash "$GITHUB_WORKSPACE/deploy/data-repo/steps/android-16.sh"
     - if: inputs.release != '' || startsWith(github.ref, 'refs/tags/v')
       uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
       with:
