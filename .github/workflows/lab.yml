@@ -1,0 +1,58 @@
+name: Rig
+
+on:
+  workflow_dispatch:
+    inputs:
+      api:
+        required: true
+        default: "34"
+      ref:
+        required: true
+        default: main
+      script:
+        required: true
+      target:
+        required: false
+        default: google_apis
+        type: choice
+        options: [google_apis, android-tv]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rig
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: ${{ secrets.SOURCE_REPO }}
+          token: ${{ secrets.SOURCE_READ }}
+          path: src
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: ${{ secrets.SOURCE_REPO }}
+          token: ${{ secrets.SOURCE_READ }}
+          ref: ${{ inputs.ref }}
+          path: t
+          persist-credentials: false
+      - run: bash src/deploy/data-repo/go.sh 20 prep
+      - uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LAB_API: ${{ inputs.api }}
+          LAB_SCRIPT: ${{ inputs.script }}
+          LAB_ROOT: ${{ github.workspace }}
+        with:
+          api-level: ${{ inputs.api }}
+          arch: x86_64
+          target: ${{ inputs.target || 'google_apis' }}
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          script: bash src/deploy/data-repo/go.sh 20 run

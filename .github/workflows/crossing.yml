@@ -1,0 +1,46 @@
+name: Crossing
+on:
+  workflow_dispatch:
+    inputs:
+      from:
+        required: true
+      to:
+        default: ""
+      expect:
+        type: choice
+        options:
+        - update
+        - nothing
+        default: update
+      legs:
+        default: '["ubuntu-latest","macos-latest"]'
+permissions:
+  contents: read
+concurrency:
+  group: crossing
+  cancel-in-progress: false
+jobs:
+  run:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ fromJSON(inputs.legs) }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        repository: ${{ secrets.SOURCE_REPO }}
+        token: ${{ secrets.SOURCE_READ }}
+        ref: main
+        path: trusted
+        sparse-checkout: deploy/data-repo
+        persist-credentials: false
+    - env:
+        FROM: ${{ inputs.from }}
+        TO: ${{ inputs.to }}
+        EXPECT: ${{ inputs.expect }}
+        SOURCE_REPO: ${{ secrets.SOURCE_REPO }}
+        SOURCE_READ: ${{ secrets.SOURCE_READ }}
+      timeout-minutes: 25
+      run: bash trusted/deploy/data-repo/go.sh 37
