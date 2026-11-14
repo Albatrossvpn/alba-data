@@ -1,0 +1,39 @@
+name: Watch
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: watch
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: ${{ secrets.SOURCE_REPO }}
+          token: ${{ secrets.SOURCE_TOKEN }}
+          path: src
+          persist-credentials: false
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash src/deploy/data-repo/go.sh 36
+
+  end:
+    needs: run
+    if: always() && github.actor == 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run cleanup.yml -R "$GITHUB_REPOSITORY" -f run="$GITHUB_RUN_ID" > /dev/null 2>&1 || true

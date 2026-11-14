@@ -1,0 +1,107 @@
+name: Update
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: update
+  cancel-in-progress: false
+
+jobs:
+  read:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.SOURCE_REPO }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || secrets.SOURCE_REPO }}
+      TOKEN_SECRET: ${{ secrets.TOKEN_SECRET || secrets.SOURCE_REPO }}
+      SOURCE_REPO: ${{ secrets.SOURCE_REPO }}
+      SHARD: ${{ matrix.shard }}/4
+    steps:
+      - env:
+          SOURCE_TOKEN: ${{ secrets.SOURCE_TOKEN }}
+        run: git clone -q --depth 1 "https://x-access-token:${SOURCE_TOKEN}@github.com/${SOURCE_REPO}.git" src > /dev/null 2>&1 && git -C src remote set-url origin "https://github.com/${SOURCE_REPO}.git"
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: src/go.mod
+          cache-dependency-path: src/go.sum
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: bash src/deploy/data-repo/go.sh 26
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: read-${{ matrix.shard }}
+          path: src/sealed/read-${{ matrix.shard }}.tar.gpg
+          retention-days: 1
+          if-no-files-found: error
+
+  run:
+    needs: read
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.SOURCE_REPO }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || secrets.SOURCE_REPO }}
+      ADMIN_USER: ${{ secrets.ADMIN_USER || secrets.SOURCE_REPO }}
+      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD || secrets.SOURCE_REPO }}
+      OWN_SERVERS: ${{ secrets.OWN_SERVERS || secrets.SOURCE_REPO }}
+      OWN_RELAYS: ${{ secrets.OWN_RELAYS || secrets.SOURCE_REPO }}
+      OWN_KEY: ${{ secrets.OWN_KEY || secrets.SOURCE_REPO }}
+      GLOBALPING_TOKEN: ${{ secrets.GLOBALPING_TOKEN || secrets.SOURCE_REPO }}
+      GLOBALPING_TAGS: ${{ secrets.GLOBALPING_TAGS || secrets.SOURCE_REPO }}
+      RIPE_ATLAS_KEY: ${{ secrets.RIPE_ATLAS_KEY || secrets.SOURCE_REPO }}
+      SOURCE_TOKEN: ${{ secrets.SOURCE_TOKEN || secrets.SOURCE_REPO }}
+      TOKEN_SECRET: ${{ secrets.TOKEN_SECRET || secrets.SOURCE_REPO }}
+      SOURCE_REPO: ${{ secrets.SOURCE_REPO }}
+      READ_SEALED: ${{ github.workspace }}/read
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - run: git clone -q --depth 1 "https://x-access-token:${SOURCE_TOKEN}@github.com/${SOURCE_REPO}.git" src > /dev/null 2>&1 && git -C src remote set-url origin "https://github.com/${SOURCE_REPO}.git"
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: src/go.mod
+          cache-dependency-path: src/go.sum
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        continue-on-error: true
+        with:
+          pattern: read-*
+          path: read
+          merge-multiple: true
+      - run: bash src/deploy/data-repo/go.sh 13
+      - if: success() && github.ref_name == github.event.repository.default_branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run update.yml --ref "${GITHUB_REF_NAME}" -R "${{ github.repository }}" >/dev/null || true
+          gh workflow run check.yml --ref "${GITHUB_REF_NAME}" -R "${{ github.repository }}" >/dev/null || true
+          gh workflow run sample.yml --ref "${GITHUB_REF_NAME}" -R "${{ github.repository }}" >/dev/null || true
+          gh workflow run share.yml --ref "${GITHUB_REF_NAME}" -R "${{ github.repository }}" >/dev/null || true
+
+  end:
+    needs: run
+    if: always() && github.actor == 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run cleanup.yml -R "$GITHUB_REPOSITORY" -f run="$GITHUB_RUN_ID" > /dev/null 2>&1 || true

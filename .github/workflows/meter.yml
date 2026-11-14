@@ -1,0 +1,38 @@
+name: Meter
+
+on:
+  schedule:
+    - cron: "37 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: meter
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - env:
+          SOURCE_REPO: ${{ secrets.SOURCE_REPO }}
+          SOURCE_TOKEN: ${{ secrets.SOURCE_TOKEN }}
+        run: git clone -q --depth 1 "https://x-access-token:${SOURCE_TOKEN}@github.com/${SOURCE_REPO}.git" src > /dev/null 2>&1 && git -C src remote set-url origin "https://github.com/${SOURCE_REPO}.git"
+      - env:
+          SOURCE_TOKEN: ${{ secrets.SOURCE_TOKEN }}
+        run: bash src/deploy/data-repo/go.sh 21
+
+  end:
+    needs: run
+    if: always() && github.actor == 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run cleanup.yml -R "$GITHUB_REPOSITORY" -f run="$GITHUB_RUN_ID" > /dev/null 2>&1 || true
