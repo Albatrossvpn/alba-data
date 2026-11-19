@@ -58,7 +58,7 @@ jobs:
     needs: check
     if: needs.check.outputs.due == '1' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45
     outputs:
       sha: ${{ steps.build.outputs.sha }}
       sealed_sha256: ${{ steps.build.outputs.sealed_sha256 }}
