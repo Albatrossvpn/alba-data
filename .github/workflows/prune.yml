@@ -1,0 +1,43 @@
+name: Prune
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options:
+          - dry-run
+          - delete
+        default: dry-run
+      versions:
+        required: true
+        default: "1.3.2 1.3.3 1.3.4 1.3.5 1.3.6 1.3.7 1.3.8 1.3.9 1.3.10"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prune
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: ${{ secrets.SOURCE_REPO }}
+          token: ${{ secrets.SOURCE_READ }}
+          ref: main
+          path: trusted
+          persist-credentials: false
+      - env:
+          MODE: ${{ inputs.mode }}
+          VERSIONS: ${{ inputs.versions }}
+          SOURCE_READ: ${{ secrets.SOURCE_READ }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: bash trusted/deploy/data-repo/go.sh 41
+      - if: always()
+        run: rm -rf "$RUNNER_TEMP"/prune.*
