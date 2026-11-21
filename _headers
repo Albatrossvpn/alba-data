@@ -1,0 +1,50 @@
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  X-Permitted-Cross-Domain-Policies: none
+  Strict-Transport-Security: max-age=0
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-+95mxycIjHNuBhJbECAavrhgjjdRc4t0ZNm6h5uRJyA=' https://www.googletagmanager.com https://www.googleadservices.com https://www.google.com https://*.googletagmanager.com https://googleads.g.doubleclick.net; style-src 'self'; img-src 'self' data: https://www.googletagmanager.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com https://www.google.com https://*.google-analytics.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.google.com; connect-src 'self' https://accounts.albatrossvpn.online https://www.googletagmanager.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com https://www.google.com https://ad.doubleclick.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.google.com; frame-src https://www.googletagmanager.com https://td.doubleclick.net; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+
+# Fonts never change under the same name; images and icons are kept a day
+# (an image that changes for good gets a new name, or waits a day). Pages,
+# styles and scripts stay checked on every visit, so a change shows at once.
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+/img/*
+  Cache-Control: public, max-age=86400
+/icon.svg
+  Cache-Control: public, max-age=86400
+/favicon.svg
+  Cache-Control: public, max-age=86400
+/favicon.ico
+  Cache-Control: public, max-age=86400
+/apple-touch-icon.png
+  Cache-Control: public, max-age=86400
+
+# The pages say their character set in the header too (they also say it first in the page).
+/
+  Content-Type: text/html; charset=utf-8
+/trial
+  Content-Type: text/html; charset=utf-8
+/help
+  Content-Type: text/html; charset=utf-8
+/guides
+  Content-Type: text/html; charset=utf-8
+/windows
+  Content-Type: text/html; charset=utf-8
+/android
+  Content-Type: text/html; charset=utf-8
+/android-tv
+  Content-Type: text/html; charset=utf-8
+/linux
+  Content-Type: text/html; charset=utf-8
+/macos
+  Content-Type: text/html; charset=utf-8
+/tv
+  Content-Type: text/html; charset=utf-8
+/share
+  Content-Type: text/html; charset=utf-8
+/pay-by-card
+  Content-Type: text/html; charset=utf-8
