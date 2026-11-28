@@ -1,0 +1,68 @@
+{
+  "download_url": "https://albatrossvpn.online/#download",
+  "files": {
+    "android-arm64-v8a": {
+      "sha256": "884bc9870b214ae824893db1db54eb98cb4bfb276e538e6f75a9c88be2d14620",
+      "urls": [
+        "https://github.com/Albatrossvpn/alba-data/releases/download/v2.0.2/Albatross-2.0.2-android.apk",
+        "https://albatrossvpn.online/download/Albatross-2.0.2-android.apk",
+        "https://accounts.albatrossvpn.online/dl/v2.0.2/Albatross-2.0.2-android.apk"
+      ]
+    },
+    "android-armeabi-v7a": {
+      "sha256": "363f6dc0985c8291efaca3893344f158854bb41cf8cb48333a858b1eca39a95d",
+      "urls": [
+        "https://github.com/Albatrossvpn/alba-data/releases/download/v2.0.2/Albatross-2.0.2-android-armv7.apk",
+        "https://albatrossvpn.online/download/Albatross-2.0.2-android-armv7.apk",
+        "https://accounts.albatrossvpn.online/dl/v2.0.2/Albatross-2.0.2-android-armv7.apk"
+      ]
+    },
+    "linux-arm64": {
+      "sha256": "4f055e6f306b378c8f06333cc497f7abdb222dea45ecb66000771dc255d3e844",
+      "urls": [
+        "https://github.com/Albatrossvpn/alba-data/releases/download/v2.0.2/Albatross-2.0.2-linux-arm64.tar.gz",
+        "https://albatrossvpn.online/download/Albatross-2.0.2-linux-arm64.tar.gz",
+        "https://accounts.albatrossvpn.online/dl/v2.0.2/Albatross-2.0.2-linux-arm64.tar.gz"
+      ]
+    },
+    "linux-x86_64": {
+      "sha256": "157378fef4359569e4ef1f80cc57c6fe5e3d63141c34d404af7b964a7bbf5981",
+      "urls": [
+        "https://github.com/Albatrossvpn/alba-data/releases/download/v2.0.2/Albatross-2.0.2-linux-x86_64.tar.gz",
+        "https://albatrossvpn.online/download/Albatross-2.0.2-linux-x86_64.tar.gz",
+        "https://accounts.albatrossvpn.online/dl/v2.0.2/Albatross-2.0.2-linux-x86_64.tar.gz"
+      ]
+    },
+    "macos-arm64": {
+      "sha256": "41cb32fe0fff9f7a0d62e13503ed180cfcbf6f2461624fab8a90c682e58aafbb",
+      "urls": [
+        "https://github.com/Albatrossvpn/alba-data/releases/download/v2.0.2/Albatross-2.0.2-macos-arm64.zip",
+        "https://albatrossvpn.online/download/Albatross-2.0.2-macos-arm64.zip",
+        "https://accounts.albatrossvpn.online/dl/v2.0.2/Albatross-2.0.2-macos-arm64.zip"
+      ]
+    },
+    "macos-x86_64": {
+      "sha256": "ecb6f6df8e03106ee46b4ba4d1c580888fb4c43ba7e380aa6964f259ff8ebab4",
+      "urls": [
+        "https://github.com/Albatrossvpn/alba-data/releases/download/v2.0.2/Albatross-2.0.2-macos-x86_64.zip",
+        "https://albatrossvpn.online/download/Albatross-2.0.2-macos-x86_64.zip",
+        "https://accounts.albatrossvpn.online/dl/v2.0.2/Albatross-2.0.2-macos-x86_64.zip"
+      ]
+    },
+    "windows": {
+      "sha256": "6ceac6a0b555b1859ba2189ccbf1bad215e02501eb7bb8229703f052c4dea13a",
+      "urls": [
+        "https://github.com/Albatrossvpn/alba-data/releases/download/v2.0.2/Albatross-Setup-2.0.2.exe",
+        "https://albatrossvpn.online/download/Albatross-Setup-2.0.2.exe",
+        "https://accounts.albatrossvpn.online/dl/v2.0.2/Albatross-Setup-2.0.2.exe"
+      ]
+    }
+  },
+  "latest_version": "2.0.2",
+  "message": "Version 2.0.2: built-in ways rebuilt for Iran, daily Iranian apps list, and a Private DNS warning.",
+  "min_version": "2.0.0",
+  "require": "2.0.0",
+  "sig": "yP5DZ+yaCgIP4Bn1pykK7dueDt15A7IWsRZpxNj/vcAgu4eU2R+EUKIzfpFTNcuLjlHb5aeXLCs3lvbHVyOsAw==",
+  "sig2": "F8Ok7Lw9uBigb/zwEa8zF8YVqH1J7YV0fRDadAkI1fDaGFZoTXsbQTzWUHMTFyv3YNn+z56Jpj/QZBFCSJhJDQ==",
+  "signed": "eyJkb3dubG9hZF91cmwiOiJodHRwczovL2FsYmF0cm9zc3Zwbi5vbmxpbmUvI2Rvd25sb2FkIiwiZmlsZXMiOnsiYW5kcm9pZC1hcm02NC12OGEiOnsic2hhMjU2IjoiODg0YmM5ODcwYjIxNGFlODI0ODkzZGIxZGI1NGViOThjYjRiZmIyNzZlNTM4ZTZmNzVhOWM4OGJlMmQxNDYyMCIsInVybHMiOlsiaHR0cHM6Ly9naXRodWIuY29tL0FsYmF0cm9zc3Zwbi9hbGJhLWRhdGEvcmVsZWFzZXMvZG93bmxvYWQvdjIuMC4yL0FsYmF0cm9zcy0yLjAuMi1hbmRyb2lkLmFwayIsImh0dHBzOi8vYWxiYXRyb3NzdnBuLm9ubGluZS9kb3dubG9hZC9BbGJhdHJvc3MtMi4wLjItYW5kcm9pZC5hcGsiLCJodHRwczovL2FjY291bnRzLmFsYmF0cm9zc3Zwbi5vbmxpbmUvZGwvdjIuMC4yL0FsYmF0cm9zcy0yLjAuMi1hbmRyb2lkLmFwayJdfSwiYW5kcm9pZC1hcm1lYWJpLXY3YSI6eyJzaGEyNTYiOiIzNjNmNmRjMDk4NWM4MjkxZWZhY2EzODkzMzQ0ZjE1ODg1NGJiNDFjZjhjYjQ4MzMzYTg1OGIxZWNhMzlhOTVkIiwidXJscyI6WyJodHRwczovL2dpdGh1Yi5jb20vQWxiYXRyb3NzdnBuL2FsYmEtZGF0YS9yZWxlYXNlcy9kb3dubG9hZC92Mi4wLjIvQWxiYXRyb3NzLTIuMC4yLWFuZHJvaWQtYXJtdjcuYXBrIiwiaHR0cHM6Ly9hbGJhdHJvc3N2cG4ub25saW5lL2Rvd25sb2FkL0FsYmF0cm9zcy0yLjAuMi1hbmRyb2lkLWFybXY3LmFwayIsImh0dHBzOi8vYWNjb3VudHMuYWxiYXRyb3NzdnBuLm9ubGluZS9kbC92Mi4wLjIvQWxiYXRyb3NzLTIuMC4yLWFuZHJvaWQtYXJtdjcuYXBrIl19LCJsaW51eC1hcm02NCI6eyJzaGEyNTYiOiI0ZjA1NWU2ZjMwNmIzNzhjOGYwNjMzM2NjNDk3ZjdhYmRiMjIyZGVhNDVlY2I2NjAwMDc3MWRjMjU1ZDNlODQ0IiwidXJscyI6WyJodHRwczovL2dpdGh1Yi5jb20vQWxiYXRyb3NzdnBuL2FsYmEtZGF0YS9yZWxlYXNlcy9kb3dubG9hZC92Mi4wLjIvQWxiYXRyb3NzLTIuMC4yLWxpbnV4LWFybTY0LnRhci5neiIsImh0dHBzOi8vYWxiYXRyb3NzdnBuLm9ubGluZS9kb3dubG9hZC9BbGJhdHJvc3MtMi4wLjItbGludXgtYXJtNjQudGFyLmd6IiwiaHR0cHM6Ly9hY2NvdW50cy5hbGJhdHJvc3N2cG4ub25saW5lL2RsL3YyLjAuMi9BbGJhdHJvc3MtMi4wLjItbGludXgtYXJtNjQudGFyLmd6Il19LCJsaW51eC14ODZfNjQiOnsic2hhMjU2IjoiMTU3Mzc4ZmVmNDM1OTU2OWU0ZWYxZjgwY2M1N2M2ZmU1ZTNkNjMxNDFjMzRkNDA0YWY3Yjk2NGE3YmJmNTk4MSIsInVybHMiOlsiaHR0cHM6Ly9naXRodWIuY29tL0FsYmF0cm9zc3Zwbi9hbGJhLWRhdGEvcmVsZWFzZXMvZG93bmxvYWQvdjIuMC4yL0FsYmF0cm9zcy0yLjAuMi1saW51eC14ODZfNjQudGFyLmd6IiwiaHR0cHM6Ly9hbGJhdHJvc3N2cG4ub25saW5lL2Rvd25sb2FkL0FsYmF0cm9zcy0yLjAuMi1saW51eC14ODZfNjQudGFyLmd6IiwiaHR0cHM6Ly9hY2NvdW50cy5hbGJhdHJvc3N2cG4ub25saW5lL2RsL3YyLjAuMi9BbGJhdHJvc3MtMi4wLjItbGludXgteDg2XzY0LnRhci5neiJdfSwibWFjb3MtYXJtNjQiOnsic2hhMjU2IjoiNDFjYjMyZmUwZmZmOWY3YTBkNjJlMTM1MDNlZDE4MGNmY2JmNmYyNDYxNjI0ZmFiOGE5MGM2ODJlNThhYWZiYiIsInVybHMiOlsiaHR0cHM6Ly9naXRodWIuY29tL0FsYmF0cm9zc3Zwbi9hbGJhLWRhdGEvcmVsZWFzZXMvZG93bmxvYWQvdjIuMC4yL0FsYmF0cm9zcy0yLjAuMi1tYWNvcy1hcm02NC56aXAiLCJodHRwczovL2FsYmF0cm9zc3Zwbi5vbmxpbmUvZG93bmxvYWQvQWxiYXRyb3NzLTIuMC4yLW1hY29zLWFybTY0LnppcCIsImh0dHBzOi8vYWNjb3VudHMuYWxiYXRyb3NzdnBuLm9ubGluZS9kbC92Mi4wLjIvQWxiYXRyb3NzLTIuMC4yLW1hY29zLWFybTY0LnppcCJdfSwibWFjb3MteDg2XzY0Ijp7InNoYTI1NiI6ImVjYjZmNmRmOGUwMzEwNmVlNDZiNGJhNGQxYzU4MDg4OGZiNGM0M2JhN2UzODBhYTY5NjRmMjU5ZmY4ZWJhYjQiLCJ1cmxzIjpbImh0dHBzOi8vZ2l0aHViLmNvbS9BbGJhdHJvc3N2cG4vYWxiYS1kYXRhL3JlbGVhc2VzL2Rvd25sb2FkL3YyLjAuMi9BbGJhdHJvc3MtMi4wLjItbWFjb3MteDg2XzY0LnppcCIsImh0dHBzOi8vYWxiYXRyb3NzdnBuLm9ubGluZS9kb3dubG9hZC9BbGJhdHJvc3MtMi4wLjItbWFjb3MteDg2XzY0LnppcCIsImh0dHBzOi8vYWNjb3VudHMuYWxiYXRyb3NzdnBuLm9ubGluZS9kbC92Mi4wLjIvQWxiYXRyb3NzLTIuMC4yLW1hY29zLXg4Nl82NC56aXAiXX0sIndpbmRvd3MiOnsic2hhMjU2IjoiNmNlYWM2YTBiNTU1YjE4NTliYTIxODljY2JmMWJhZDIxNWUwMjUwMWViN2JiODIyOTcwM2YwNTJjNGRlYTEzYSIsInVybHMiOlsiaHR0cHM6Ly9naXRodWIuY29tL0FsYmF0cm9zc3Zwbi9hbGJhLWRhdGEvcmVsZWFzZXMvZG93bmxvYWQvdjIuMC4yL0FsYmF0cm9zcy1TZXR1cC0yLjAuMi5leGUiLCJodHRwczovL2FsYmF0cm9zc3Zwbi5vbmxpbmUvZG93bmxvYWQvQWxiYXRyb3NzLVNldHVwLTIuMC4yLmV4ZSIsImh0dHBzOi8vYWNjb3VudHMuYWxiYXRyb3NzdnBuLm9ubGluZS9kbC92Mi4wLjIvQWxiYXRyb3NzLVNldHVwLTIuMC4yLmV4ZSJdfX0sImxhdGVzdF92ZXJzaW9uIjoiMi4wLjIiLCJtZXNzYWdlIjoiVmVyc2lvbiAyLjAuMjogYnVpbHQtaW4gd2F5cyByZWJ1aWx0IGZvciBJcmFuLCBkYWlseSBJcmFuaWFuIGFwcHMgbGlzdCwgYW5kIGEgUHJpdmF0ZSBETlMgd2FybmluZy4iLCJtaW5fdmVyc2lvbiI6IjIuMC4wIiwicmVxdWlyZSI6IjIuMC4wIn0="
+}

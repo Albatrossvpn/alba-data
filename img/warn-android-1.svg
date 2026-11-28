@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 140" width="220" height="140" font-family="Roboto, Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x=".5" y=".5" width="219" height="139" rx="10" fill="#fff" stroke="#c2cce0"/>
+  <text x="16" y="29" fill="#06122f" font-size="13.5" font-weight="700">Install unknown apps</text>
+  <rect x="16" y="42" width="24" height="24" rx="7" fill="#e4ecfd"/>
+  <text x="48" y="59" fill="#2e3b5e" font-size="12">Your browser</text>
+  <line x1="16" y1="80" x2="204" y2="80" stroke="#dbe2ee"/>
+  <text x="16" y="111" fill="#06122f" font-size="12" font-weight="600">Allow from this source</text>
+  <rect x="155" y="92" width="54" height="34" rx="17" fill="none" stroke="#e6a100" stroke-width="2.5"/>
+  <rect x="162" y="98" width="40" height="22" rx="11" fill="#1d4ff0"/>
+  <circle cx="191" cy="109" r="8" fill="#fff"/>
+  <circle cx="143" cy="86" r="10" fill="#ffd166"/>
+  <text x="143" y="90.5" fill="#06122f" font-size="12.5" font-weight="800" text-anchor="middle">1</text>
+</svg>
